@@ -1,8 +1,8 @@
 # Setting source for alljoyn client
-AJ_CLI_SRC = Glob(['aj_client.c'])
+AJ_CLI_SRC = Glob('aj_client.c')
 
 # Setting source for alljoyn service
-AJ_SRV_SRC = Glob(['aj_service.c'])
+AJ_SRV_SRC = Glob('aj_service.c')
 
 # Get argument from command-line
 VARIANT = ARGUMENTS.get('VARIANT', 'debug')
