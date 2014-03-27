@@ -14,6 +14,6 @@ To build with scons:
     $ cd alljoyn_c_application
     $ scons VARIANT=(release, debug)
 
-Clean libjson-br
+Clean
 =====
 - scons -c
