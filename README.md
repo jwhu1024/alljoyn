@@ -18,3 +18,9 @@ Build with scons:
 Clean
 =====
 - scons -c
+
+Run alljoyn
+=====
+- run ./bin/alljoyn_daemon
+- run ./aj_c_client
+- run ./aj_c_service
