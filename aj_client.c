@@ -38,6 +38,11 @@ static const char* OBJECT_NAME = "com.bandrich.Bus.sample";
 static const char* OBJECT_PATH = "/sample";
 static volatile sig_atomic_t g_interrupt = QCC_FALSE;
 
+/* hard-code the port number we used */
+static const alljoyn_sessionport SERVICE_PORT = 25;
+static alljoyn_sessionid s_sessionId = 0;
+
+static QCC_BOOL s_joinComplete = QCC_FALSE;
 static QCC_BOOL s_found = QCC_FALSE;
 static QCC_BOOL s_lost  = QCC_FALSE;
 
@@ -80,6 +85,34 @@ void found_advertised_name(const void* context, const char* name, alljoyn_transp
 	
 	if (transport_cov)	free(transport_cov);
 #endif
+
+	if (0 == strcmp(name, OBJECT_NAME))
+	{	
+		/* Create session options */
+		alljoyn_sessionopts opts = alljoyn_sessionopts_create(ALLJOYN_TRAFFIC_TYPE_MESSAGES, QCC_FALSE, ALLJOYN_PROXIMITY_ANY, ALLJOYN_TRANSPORT_ANY);
+
+		/* enable concurrent callbacks so joinsession can be called */
+        alljoyn_busattachment_enableconcurrentcallbacks(g_msgBus);
+
+		// Request to join session owner
+		QStatus status = alljoyn_busattachment_joinsession(g_msgBus,
+												   		   name,
+												   		   SERVICE_PORT,
+												   		   NULL,
+												   		   &s_sessionId,
+												   		   opts);
+
+		if (ER_OK != status)
+		{
+	        printf("[INFO] alljoyn_busattachment_joinsession failed (status=%s)\n", QCC_StatusText(status));
+		}
+		else
+		{
+			printf("[INFO] alljoyn_busattachment_joinsession SUCCESS (Session id=%d)\n", s_sessionId);
+		}
+
+		alljoyn_sessionopts_destroy(opts);
+	}
 	s_found = QCC_TRUE;
 	return;
 }

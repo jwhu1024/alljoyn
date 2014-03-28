@@ -132,9 +132,7 @@ void add_method(alljoyn_busobject bus, const alljoyn_interfacedescription_member
     char* str1;
     char* str2;
     int ret;
-	
-	 
-	
+		
     /* Concatenate the two input strings and reply with the result. */
     char result[256] = { 0 };
 
