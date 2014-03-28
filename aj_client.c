@@ -39,6 +39,7 @@ static const char* OBJECT_PATH = "/sample";
 static volatile sig_atomic_t g_interrupt = QCC_FALSE;
 
 static QCC_BOOL s_found = QCC_FALSE;
+static QCC_BOOL s_lost  = QCC_FALSE;
 
 static void SigIntHandler(int sig)
 {
@@ -73,10 +74,9 @@ void found_advertised_name(const void* context, const char* name, alljoyn_transp
 {
 #ifdef DEBUG
 	char *transport_cov = convert_transport(transport);
-	printf("found_advertised_name - name %s\n", name);
-	printf("found_advertised_name - namePrefix %s\n", namePrefix);
-	// printf("found_advertised_name - transport 0x%04X", transport);
-	printf("found_advertised_name - transport %s\n", transport_cov);
+	printf("[CALLBACK] found_advertised_name - name %s\n", name);
+	printf("[CALLBACK] found_advertised_name - namePrefix %s\n", namePrefix);
+	printf("[CALLBACK] found_advertised_name - transport %s\n", transport_cov);
 	
 	if (transport_cov)	free(transport_cov);
 #endif
@@ -84,11 +84,68 @@ void found_advertised_name(const void* context, const char* name, alljoyn_transp
 	return;
 }
 
-/* ObjectRegistered callback */
-void busobject_object_registered(const void* context)
+void lost_advertised_name(const void* context, const char* name, alljoyn_transportmask transport, const char* namePrefix)
 {
 #ifdef DEBUG
-    printf("ObjectRegistered has been called\n");
+	char *transport_cov = convert_transport(transport);
+	printf("[CALLBACK] lost_advertised_name - name %s\n", name);
+	printf("[CALLBACK] lost_advertised_name - namePrefix %s\n", namePrefix);
+	printf("[CALLBACK] lost_advertised_name - transport %s\n", transport_cov);
+	
+	if (transport_cov)	free(transport_cov);
+#endif
+	s_lost = QCC_TRUE;
+	return;
+}
+
+void listener_registered(const void *context, alljoyn_busattachment bus)
+{
+#ifdef DEBUG
+	printf("[CALLBACK] listener_registered\n");
+#endif
+}
+
+void listener_unregistered(const void *context)
+{
+#ifdef DEBUG
+	printf("[CALLBACK] listener_unregistered\n");
+#endif
+}
+
+void name_owner_changed(const void *context, const char *busName, const char *previousOwner, const char *newOwner)
+{
+#ifdef DEBUG
+	printf("[CALLBACK] name_owner_changed\n");
+	printf("[CALLBACK] name_owner_changed - BusName %s\n", busName);
+	printf("[CALLBACK] name_owner_changed - previousOwner %s\n", previousOwner);
+	printf("[CALLBACK] name_owner_changed - newOwner %s\n", newOwner);
+#endif
+}
+
+void bus_stopping(const void *context)
+{
+#ifdef DEBUG
+	printf("[CALLBACK] bus_stopping\n");
+#endif
+}
+
+void bus_disconnected(const void *context)
+{
+#ifdef DEBUG
+	printf("[CALLBACK] bus_disconnected\n");
+#endif
+}
+
+void property_changed(const void *context, const char *prop_name, alljoyn_msgarg prop_value)
+{
+#ifdef DEBUG
+	printf("[CALLBACK] property_changed\n");
+	printf("[CALLBACK] property_changed - prop_name %s\n", prop_name);
+
+	if (prop_value)
+	{
+		printf("[CALLBACK] property_changed - prop_value exist\n");
+	}
 #endif
 }
 
@@ -106,15 +163,14 @@ int main(int argc, char** argv, char** envArg)
 	/* Struct containing callbacks used for creation of an alljoyn_buslistener. */
 	alljoyn_buslistener_callbacks aj_callback=
 	{
-		NULL,						// listener_registered
-		NULL,						// listener_unregistered
-		// NULL,					// found_advertised_name
+		&listener_registered,		// listener_registered
+		&listener_unregistered,		// listener_unregistered
 		&found_advertised_name,		// found_advertised_name
-		NULL,						// lost_advertised_name
-		NULL,						// name_owner_changed
-		NULL,						// bus_stopping
-		NULL,						// bus_disconnected
-		NULL						// property_changed
+		&lost_advertised_name,		// lost_advertised_name
+		&name_owner_changed,		// name_owner_changed
+		&bus_stopping,				// bus_stopping
+		&bus_disconnected,			// bus_disconnected
+		&property_changed			// property_changed
 	};
 
 	// 1. Create a BusAttachment
@@ -190,5 +246,12 @@ oops:
 		g_msgBus = NULL;
 		alljoyn_busattachment_destroy(deleteMe);
 	}
-	return 1;
+
+	/* Deallocate listener */
+	if (g_busListener)
+	{
+		alljoyn_buslistener_destroy(g_busListener);
+	}
+
+	return (int) status;
 }
