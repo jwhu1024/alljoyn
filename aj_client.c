@@ -123,7 +123,7 @@ int main(int argc, char** argv, char** envArg)
 	// 3. Create a BusInterterface
 	status = alljoyn_busattachment_createinterface(g_msgBus, INTERFACE_NAME, &g_iface);
 
-	/* Add org.alljoyn.Bus.method_sample interface */
+	/* Add interface */
 	if (status == ER_OK) {
 		alljoyn_interfacedescription_addmember(g_iface,
 											   ALLJOYN_MESSAGE_METHOD_CALL,
@@ -157,6 +157,24 @@ int main(int argc, char** argv, char** envArg)
 	printf("[INFO] Bus Started\n");
 
 	// Connect to Bus
+	status = alljoyn_busattachment_connect(g_msgBus, connectArgs);
+	if (ER_OK != status)
+	{
+		printf("[INFO] Bus Connect Failed\n");
+		goto oops;
+	}
+
+	status = alljoyn_busattachment_findadvertisedname(g_msgBus, OBJECT_NAME);
+#ifdef DEBUG
+	if (status != ER_OK)
+	{
+    	printf("alljoyn_busattachment_findadvertisedname failed (%s))\n", QCC_StatusText(status));
+		goto oops;
+	}
+#endif
+
+/*
+	// Connect to Bus
 	if (ER_OK == status)
 	{
 		status = alljoyn_busattachment_connect(g_msgBus, connectArgs);
@@ -174,6 +192,7 @@ int main(int argc, char** argv, char** envArg)
 #endif
 		}
 	}
+*/
 
 	while (status == ER_OK && g_interrupt == QCC_FALSE)
 	{
