@@ -48,8 +48,8 @@ static alljoyn_sessionportlistener s_sessionPortListener = NULL;
 static alljoyn_buslistener g_busListener = NULL;
 
 /*constants*/
-static const char* INTERFACE_NAME = "org.alljoyn.Bus.sample";
-static const char* OBJECT_NAME = "org.alljoyn.Bus.sample";
+static const char* INTERFACE_NAME = "com.bandrich.Bus.sample";
+static const char* OBJECT_NAME = "com.bandrich.Bus.sample";
 static const char* OBJECT_PATH = "/sample";
 static const alljoyn_sessionport SERVICE_PORT = 25;
 

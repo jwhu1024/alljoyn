@@ -4,7 +4,7 @@
 scons -c
 
 # compile without debug symbol table
-scons VARIANT=release
+scons VARIANT=$1
 
 # compile with debug symbol table
 # scons VARIANT=debug

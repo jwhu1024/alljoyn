@@ -13,7 +13,7 @@ Help(vars.GenerateHelpText(env))
 
 # debug version will compile with -g flag to enable debug symbol table
 if VARIANT == 'debug':
-	env.Append(CCFLAGS = ['-g', '-DQCC_OS_GROUP_POSIX'])
+	env.Append(CCFLAGS = ['-g', '-DDEBUG', '-DQCC_OS_GROUP_POSIX'])
 else:
 	env.Append(CCFLAGS = ['-O2', '-DQCC_OS_GROUP_POSIX'])
 
