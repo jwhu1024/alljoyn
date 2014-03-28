@@ -113,7 +113,7 @@ void found_advertised_name(const void* context, const char* name, alljoyn_transp
 
 		alljoyn_sessionopts_destroy(opts);
 	}
-	s_found = QCC_TRUE;
+	s_joinComplete = QCC_TRUE;
 	return;
 }
 
@@ -225,6 +225,7 @@ int main(int argc, char** argv, char** envArg)
 											   "s",
 											   "inStr1,inStr2,outStr",
 											   0);
+		
 		alljoyn_interfacedescription_activate(g_iface);
 	}
 	else
@@ -266,7 +267,7 @@ int main(int argc, char** argv, char** envArg)
 	}
 #endif
 
-	while (status == ER_OK && g_interrupt == QCC_FALSE)
+	while (s_joinComplete == QCC_FALSE && g_interrupt == QCC_FALSE)
 	{
 		usleep(100 * 1000);
 	}
