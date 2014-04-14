@@ -24,3 +24,5 @@ Run alljoyn
 - run ./bin/alljoyn_daemon
 - run ./aj_c_client
 - run ./aj_c_service
+- run ./door_client
+- run ./door_service
