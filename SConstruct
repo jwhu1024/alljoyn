@@ -4,6 +4,12 @@ AJ_CLI_SRC = Glob('aj_client.c')
 # Setting source for alljoyn service
 AJ_SRV_SRC = Glob('aj_service.c')
 
+# Setting source for alljoyn door client
+AJ_DOOR_CLI_SRC = Glob('door_client.c')
+
+# Setting source for alljoyn door service
+AJ_DOOR_SRV_SRC = Glob('door_service.c')
+
 # Get argument from command-line
 VARIANT = ARGUMENTS.get('VARIANT', 'debug')
 vars = Variables(None,ARGUMENTS)
@@ -23,6 +29,7 @@ env.Append(LIBPATH = ['./lib/'])			# library path
 env.Append(CPPPATH = ['./inc/'])			# header files path
 
 # start to compile
-env.Program(source = AJ_CLI_SRC, target = 'aj_c_client')
-env.Program(source = AJ_SRV_SRC, target = 'aj_c_service')
-
+#env.Program(source = AJ_CLI_SRC, target = 'aj_c_client')
+#env.Program(source = AJ_SRV_SRC, target = 'aj_c_service')
+env.Program(source = AJ_DOOR_CLI_SRC, target = 'door_client')
+env.Program(source = AJ_DOOR_SRV_SRC, target = 'door_service')
