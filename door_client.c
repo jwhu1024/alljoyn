@@ -22,7 +22,6 @@
  ******************************************************************************/
 
 #include <qcc/platform.h>
-
 #include <assert.h>
 #include <signal.h>
 #include <stdio.h>
@@ -55,44 +54,44 @@ static volatile sig_atomic_t g_interrupt = QCC_FALSE;
 
 static void SigIntHandler(int sig)
 {
-    g_interrupt = QCC_TRUE;
+	g_interrupt = QCC_TRUE;
 }
 
 /* FoundAdvertisedName callback */
 void found_advertised_name(const void* context, const char* name, alljoyn_transportmask transport, const char* namePrefix)
 {
-    printf("found_advertised_name(name=%s, prefix=%s)\n", name, namePrefix);
-	
+	printf("found_advertised_name(name=%s, prefix=%s)\n", name, namePrefix);
+
 	if (name && strcmp(name, INTERFACE_NAME) == 0) {
-        g_found = QCC_TRUE;
-    }
+		g_found = QCC_TRUE;
+	}
 }
 
 /* LostAdvertisedName callback */
 void lost_advertised_name(const void *context, const char *name, alljoyn_transportmask transport, const char *namePrefix)
 {
-    printf("lost_advertised_name(name=%s, prefix=%s)\n", name, namePrefix);
+	printf("lost_advertised_name(name=%s, prefix=%s)\n", name, namePrefix);
 	
 	if (name && strcmp(name, INTERFACE_NAME) == 0) {
-        g_found = QCC_FALSE;
-    }
+		g_found = QCC_FALSE;
+	}
 }
 
 /* ObjectRegistered callback */
 void busobject_object_registered(const void* context)
 {
-    printf("ObjectRegistered has been called\n");
+	printf("ObjectRegistered has been called\n");
 }
 
 /* NameOwnerChanged callback */
 void name_owner_changed(const void* context, const char* busName, const char* previousOwner, const char* newOwner)
 {
-    if (newOwner && (0 == strcmp(busName, OBJECT_NAME))) {
-        printf("name_owner_changed: name=%s, oldOwner=%s, newOwner=%s\n",
-               busName,
-               previousOwner ? previousOwner : "<none>",
-               newOwner ? newOwner : "<none>");
-    }
+	if (newOwner && (0 == strcmp(busName, OBJECT_NAME))) {
+		printf("name_owner_changed: name=%s, oldOwner=%s, newOwner=%s\n",
+				busName,
+				previousOwner ? previousOwner : "<none>",
+				newOwner ? newOwner : "<none>");
+	}
 }
 
 QStatus bus_create(alljoyn_busattachment *bus)
@@ -104,26 +103,25 @@ QStatus bus_create(alljoyn_busattachment *bus)
 QStatus bus_connect(alljoyn_busattachment *bus)
 {
 	/* Start the msg bus */
-    QStatus status = alljoyn_busattachment_start(*bus);
-    if (ER_OK == status) {
-        printf("alljoyn_busattachment started.\n");
+	QStatus status = alljoyn_busattachment_start(*bus);
+	if (ER_OK == status) {
+		printf("alljoyn_busattachment started.\n");
 		status = alljoyn_busattachment_connect(*bus, CONNECTSPEC);
-        if (ER_OK != status) {
-            printf("alljoyn_busattachment_connect(\"%s\") failed, reason %s\n", CONNECTSPEC, QCC_StatusText(status));
-        } else {
-            printf("alljoyn_busattachment connected to \"%s\"\n", alljoyn_busattachment_getconnectspec(*bus));
-        }
-    } else {
+		if (ER_OK != status) {
+			printf("alljoyn_busattachment_connect(\"%s\") failed, reason %s\n", CONNECTSPEC, QCC_StatusText(status));
+		} else {
+			printf("alljoyn_busattachment connected to \"%s\"\n", alljoyn_busattachment_getconnectspec(*bus));
+		}
+	} else {
 		printf("alljoyn_busattachment_start Fail reason is %s\n", QCC_StatusText(status));
-    }
-	
+	}
 	return status;
 }
 
 QStatus bus_register(alljoyn_busattachment *bus, alljoyn_buslistener *busListener)
 {
-    /* Create a bus listener */
-    alljoyn_buslistener_callbacks callbacks = {
+	/* Create a bus listener */
+	alljoyn_buslistener_callbacks callbacks = {
 		NULL,
 		NULL,
 		&found_advertised_name,
@@ -136,24 +134,23 @@ QStatus bus_register(alljoyn_busattachment *bus, alljoyn_buslistener *busListene
     
 	*busListener = alljoyn_buslistener_create(&callbacks, NULL);
 	alljoyn_busattachment_registerbuslistener(*bus, *busListener);
-	
 	return (*busListener != NULL) ? ER_OK : ER_FAIL;
 }
 
 QStatus create_iface(alljoyn_busattachment *bus, alljoyn_interfacedescription *iface)
 {
 	QStatus status = alljoyn_busattachment_createinterface(*bus, INTERFACE_NAME, iface);
-    if (status == ER_OK) {
-        status = alljoyn_interfacedescription_addsignal(*iface,
-													    SIG_NAME,
-													    SIG_SIGN,
-													    "state",
-													    0,
-													    NULL);
-        alljoyn_interfacedescription_activate(*iface);
-        printf("Interface Created.\n");
-    } else {
-        printf("Failed to create interface, reason is '%s'\n", QCC_StatusText(status));
+	if (status == ER_OK) {
+		status = alljoyn_interfacedescription_addsignal(*iface,
+														SIG_NAME,
+														SIG_SIGN,
+														"state",
+														0,
+														NULL);
+		alljoyn_interfacedescription_activate(*iface);
+		printf("Interface Created.\n");
+	} else {
+		printf("Failed to create interface, reason is '%s'\n", QCC_StatusText(status));
 	}
 	return status;
 }
@@ -163,9 +160,9 @@ QStatus find_advertise_name(alljoyn_busattachment *bus)
 	QStatus status;
 	/* Begin discovery on the well-known name of the service to be called */
 	status = alljoyn_busattachment_findadvertisedname(*bus, OBJECT_NAME);
-    if (status != ER_OK) {
-        printf("alljoyn_busattachment_findadvertisedname failed (%s))\n", QCC_StatusText(status));
-    }
+	if (status != ER_OK) {
+		printf("alljoyn_busattachment_findadvertisedname failed (%s))\n", QCC_StatusText(status));
+	}
 	return status;
 }
 
@@ -173,55 +170,38 @@ void program_uninitialize(alljoyn_busattachment 		*bus,
 						  alljoyn_buslistener 			*busListener,
 						  alljoyn_busobject 			*bus_object,
 						  alljoyn_interfacedescription 	*iface)
-						  // alljoyn_sessionopts 			*opts,
-						  // alljoyn_sessionportlistener 	*spl
 {
-	/* Deallocate sessionopts */
-    //if (*opts) {
-    //    alljoyn_sessionopts_destroy(*opts);
-    //}
-	
-    /* Deallocate bus */
-    if (*bus) {
-        alljoyn_busattachment deleteMe = *bus;
-        *bus = NULL;
-        alljoyn_busattachment_destroy(deleteMe);
+	/* Deallocate bus */
+	if (*bus) {
+		alljoyn_busattachment deleteMe = *bus;
+		*bus = NULL;
+		alljoyn_busattachment_destroy(deleteMe);
     }
 	
+	/* Deallocate bus listener */
+	if (*busListener) {
+		alljoyn_buslistener_destroy(*busListener);
+	}
 
-    /* Deallocate bus listener */
-    if (*busListener) {
-        alljoyn_buslistener_destroy(*busListener);
-    }
-
-#if 0
-    /* Deallocate session port listener */
-    if (*spl) {
-        alljoyn_sessionportlistener_destroy(*spl);
-    }
-#endif
-
-#if 1
 	/* Deallocate the bus object */
-    if (*bus_object) {
-        alljoyn_busobject_destroy(*bus_object);
-    }
-#endif
+	if (*bus_object) {
+		alljoyn_busobject_destroy(*bus_object);
+	}
 }
 
 QStatus bus_object_init(alljoyn_busattachment *bus, alljoyn_busobject *busObject, alljoyn_interfacedescription *interface)
 {
 	QStatus status = ER_FAIL;
 	alljoyn_busobject_callbacks busObjCbs = {
-        NULL,
-        NULL,
-        &busobject_object_registered,
-        NULL
-    };
+		NULL,
+		NULL,
+		&busobject_object_registered,
+		NULL
+	};
 	
 	/* Set up bus object */
-    *busObject = alljoyn_busobject_create(OBJECT_PATH, QCC_FALSE, &busObjCbs, NULL);
-    *interface = alljoyn_busattachment_getinterface(*bus, INTERFACE_NAME);
+	*busObject = alljoyn_busobject_create(OBJECT_PATH, QCC_FALSE, &busObjCbs, NULL);
+	*interface = alljoyn_busattachment_getinterface(*bus, INTERFACE_NAME);
 
 	status = alljoyn_busobject_addinterface(*busObject, *interface);
 	if (ER_OK != status) {
@@ -242,14 +222,14 @@ QStatus emit_signal(alljoyn_busattachment *bus, alljoyn_busobject *bus_object, c
 	alljoyn_msgarg args;
 	
 	alljoyn_interfacedescription_member member;
-    alljoyn_interfacedescription interface;
+	alljoyn_interfacedescription interface;
 	interface = alljoyn_busattachment_getinterface(*bus, INTERFACE_NAME);
-    alljoyn_interfacedescription_getmember(interface, SIG_NAME, &member);
+	alljoyn_interfacedescription_getmember(interface, SIG_NAME, &member);
 	
 	args = alljoyn_msgarg_array_create(sz);
-    status = alljoyn_msgarg_array_set(args, &sz, SIG_SIGN, state);
+	status = alljoyn_msgarg_array_set(args, &sz, SIG_SIGN, state);
 
-    if (ER_OK == status) {
+	if (ER_OK == status) {
 		status = alljoyn_busobject_signal(*bus_object,
 										  NULL,
 										  0,
@@ -261,7 +241,7 @@ QStatus emit_signal(alljoyn_busattachment *bus, alljoyn_busobject *bus_object, c
 										  NULL);
 		printf("alljoyn_busobject_signal Fail reason is %s\n", QCC_StatusText(status));
     }
-    alljoyn_msgarg_destroy(args);
+	alljoyn_msgarg_destroy(args);
 	return status;
 }
 
@@ -272,15 +252,15 @@ int main(int argc, char** argv, char** envArg)
 	int dummy_state=0;
 	QStatus status = ER_OK;
 	alljoyn_busattachment aj_bus = NULL;
-    alljoyn_interfacedescription interface = NULL;
-    alljoyn_buslistener busListener = NULL;
+	alljoyn_interfacedescription interface = NULL;
+	alljoyn_buslistener busListener = NULL;
 	alljoyn_busobject bus_object = NULL;
-	
+
 	/* Install SIGINT handler */
-    signal(SIGINT, SigIntHandler);
+	signal(SIGINT, SigIntHandler);
 	
 	printf("AllJoyn Library version: %s\n", alljoyn_getversion());
-    printf("AllJoyn Library build info: %s\n", alljoyn_getbuildinfo());
+	printf("AllJoyn Library build info: %s\n", alljoyn_getbuildinfo());
 	
 	// create bus
 	status = bus_create(&aj_bus);
@@ -324,20 +304,20 @@ int main(int argc, char** argv, char** envArg)
 	}
 	
 	/* Wait for join session to complete */
-    while (g_interrupt == QCC_FALSE) {
+	while (g_interrupt == QCC_FALSE) {
 		if (g_found == QCC_TRUE) {
 			printf("emit_signal\n");
 			status = emit_signal(&aj_bus, &bus_object, dummy_state);
-			
+
 			// the state should be read from arduino (TBD)
 			dummy_state = (dummy_state==0) ? 1 : 0;
 		}
 #ifdef _WIN32
-        Sleep(1000);
+		Sleep(1000);
 #else
-        sleep(1);
-#endif		
-    }
+		sleep(1);
+#endif	
+	}
 	
 oops:
 	program_uninitialize(&aj_bus,
@@ -346,5 +326,5 @@ oops:
 						 &interface
 						 );
 
-    return (int) status;
+	return (int) status;
 }
